@@ -14,7 +14,8 @@ parser = argparse.ArgumentParser(description='enter root link with max depth for
 parser.add_argument('-r', '--root', help="main page from start scan", type=str, required=True)
 parser.add_argument('-d', '--depth', help="max depth for scanning", type=int, required=True)
 parser.add_argument('-f', '--format', help="file result format for display", type=str, required=True)
-#parser.add_argument('-s', '--search', help="search words relevant in the links content", type=str, required=True)
+#parser.add_argument('-i', '--ignore', help="ignore extentions", type=str, required=False)
+#parser.add_argument('-s', '--search', help="search words relevant in the links content", type=str, required=False)
 
 # get initial arguments
 args = vars(parser.parse_args())
