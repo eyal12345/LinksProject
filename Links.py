@@ -6,6 +6,7 @@ import yaml # pip install pyyaml
 import json
 import progressbar # pip install progressbar2
 import io
+import os
 
 # usage: -r "https://edition.cnn.com" -d 1 -f "yml"
 
@@ -14,7 +15,7 @@ parser = argparse.ArgumentParser(description='enter root link with max depth for
 parser.add_argument('-r', '--root', help="main page from start scan", type=str, required=True)
 parser.add_argument('-d', '--depth', help="max depth for scanning", type=int, required=True)
 parser.add_argument('-f', '--format', help="file result format for display", type=str, required=True)
-# parser.add_argument('-s', '--search', help="search words relevant in the links content", type=str, required=False)
+# parser.add_argument('-s', '--search', help="get links by search words", type=str, required=False)
 
 # get initial arguments
 args = vars(parser.parse_args())
@@ -48,10 +49,11 @@ def create_file_format():
 
 # read from ignore file list of extension unnecessaries
 def get_extension_unnecessaries():
-    file = open("ignore.txt" ,"r")
-    content = file.read()
-    ignore = content.split('\n')
-    file.close()
+    ignore = []
+    if os.path.exists("ignore.txt"):
+        with open("ignore.txt" ,"r") as file:
+            content = file.read()
+            ignore = content.split('\n')
     return ignore
 
 # extract urls set from general url
