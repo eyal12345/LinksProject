@@ -7,15 +7,14 @@ import json
 import progressbar # pip install progressbar2
 import io
 
-# usage: -r "https://www.ynet.co.il/home/0,7340,L-8,00.html" -d 1 -f "yml"
+# usage: -r "https://edition.cnn.com" -d 1 -f "yml"
 
 # user input
 parser = argparse.ArgumentParser(description='enter root link with max depth for scanning')
 parser.add_argument('-r', '--root', help="main page from start scan", type=str, required=True)
 parser.add_argument('-d', '--depth', help="max depth for scanning", type=int, required=True)
 parser.add_argument('-f', '--format', help="file result format for display", type=str, required=True)
-#parser.add_argument('-i', '--ignore', help="ignore extentions", type=str, required=False)
-#parser.add_argument('-s', '--search', help="search words relevant in the links content", type=str, required=False)
+# parser.add_argument('-s', '--search', help="search words relevant in the links content", type=str, required=False)
 
 # get initial arguments
 args = vars(parser.parse_args())
@@ -46,6 +45,14 @@ def create_file_format():
             json.dump({key: {"path": root ,"depth": 0 ,"access": try_open_url(root)}}, file, indent=4)
         else:
             raise Exception('the format is invalid')
+
+# read from ignore file list of extension unnecessaries
+def get_extension_unnecessaries():
+    file = open("ignore.txt" ,"r")
+    content = file.read()
+    ignore = content.split('\n')
+    file.close()
+    return ignore
 
 # extract urls set from general url
 def extract_urls(link):
@@ -81,7 +88,7 @@ def fix_urls(links):
 def create_datasets(links ,depth):
     datasets = []
     for link in links:
-        if not link in visited:
+        if not link in visited and not link.split('.')[-1] in ignore:
             dataset = (link ,depth ,try_open_url(link))
             datasets.append(dataset)
             visited.append(link)
@@ -152,6 +159,7 @@ if __name__ == "__main__":
     start = datetime.datetime.now()
     access = try_open_url(root)
     create_file_format()
+    ignore = get_extension_unnecessaries()
     if access:
         visited.append(root)
         links = download_urls([root])

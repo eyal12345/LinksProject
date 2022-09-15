@@ -1,0 +1,14 @@
+ico
+css
+js
+png
+jpg
+xml
+json
+svg
+woff2
+doc
+aspx
+pdf
+io
+php
