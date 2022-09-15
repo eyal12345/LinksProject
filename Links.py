@@ -9,17 +9,19 @@ import io
 import os
 
 # usage: -r "https://edition.cnn.com" -d 1 -f "yml"
+# save in repository: git add . && git commit -m "changes" && git push
 
 # user input
 parser = argparse.ArgumentParser(description='enter root link with max depth for scanning')
 parser.add_argument('-r', '--root', help="main page from start scan", type=str, required=True)
 parser.add_argument('-d', '--depth', help="max depth for scanning", type=int, required=True)
 parser.add_argument('-f', '--format', help="file result format for display", type=str, required=True)
-# parser.add_argument('-s', '--search', help="get links by search words", type=str, required=False)
+parser.add_argument('-s', '--search', help="get links by search words", type=str, required=False)
 
 # get initial arguments
 args = vars(parser.parse_args())
 root ,max_depth ,format = args['root'] ,args['depth'] ,args['format']
+values_search = args['search']
 timestamp = datetime.datetime.now().strftime('%m-%d-%Y %H-%M-%S')
 
 # global variables
@@ -66,6 +68,17 @@ def extract_urls(link):
         return fix_links
     except:
         return []
+
+def find_information(links):
+    relevants = []
+    for link in links:
+        response = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=False)
+        html = response.content.decode('latin1')
+        info = re.findall(values_search ,html)
+        if info:
+            relevants.append(link)
+    return relevants
+
 
 # fix incomplete urls to access active
 def fix_urls(links):
@@ -148,6 +161,7 @@ def download_urls(links ,depth = 0):
         cumulative = []
         for link in links:
             extracts = extract_urls(link)
+            # relevants = find_information(extracts)
             datasets = create_datasets(extracts ,depth + 1)
             cumulative = cumulative + datasets
             bar.update(next)
